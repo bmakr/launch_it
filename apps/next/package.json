@@ -24,7 +24,7 @@
     "vercel": "latest"
   },
   "devDependencies": {
-    "@tamagui/next-plugin": "1.108.2",
+    "@tamagui/next-plugin": "^1.108.3",
     "@types/node": "^20.14.1",
     "eslint-config-next": "^14.2.3",
     "next-compose-plugins": "^2.2.1",
