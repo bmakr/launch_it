@@ -52,6 +52,16 @@ const plugins = [
 module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
+    webpack: (config, { isServer }) => {
+      if (!isServer) {
+           config.resolve.fallback.fs = false
+           config.resolve.fallback.dns = false
+           config.resolve.fallback.net = false,
+           config.resolve.fallback.tls = false
+      }
+
+      return config
+    },
     typescript: {
       ignoreBuildErrors: true,
     },
@@ -76,7 +86,7 @@ module.exports = function () {
   for (const plugin of plugins) {
     config = {
       ...config,
-      ...plugin(config),
+      ...plugin(config)
     }
   }
 

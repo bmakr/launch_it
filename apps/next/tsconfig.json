@@ -4,7 +4,8 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": ".",
     "paths": {
-      "react-native": ["react-native-web"]
+      "react-native": ["react-native-web"],
+      "types": ["./app/_types"]
     },
     "allowJs": true,
     "skipLibCheck": true,
