@@ -47,7 +47,10 @@ export async function POST(
   let userId = ''
   let createdAt = 0
   try {
-    const passcode = await getItem({ name: 'sessions', key: 'passcode',  id }) as Passcode
+    const passcode = await getItem({ 
+      name: 'passcodes', 
+      id 
+    }) as Passcode
     if (!passcode || !passcode.code) {
       return NextResponse.json({ error: 'Passcode id not found in db' }, { status: 404 })
     }
@@ -86,7 +89,10 @@ export async function POST(
 
   // delete passcode from db
   try {
-    await deleteItem({ name: 'sessions', key: 'passcode', id })
+    await deleteItem({ 
+      name: 'passcodes', 
+      id 
+    })
   } catch (e) {
     console.log({ error: e })
     return NextResponse.json({ error: 'Internal error: failed to delete passcode from db' }, { status: 500 })

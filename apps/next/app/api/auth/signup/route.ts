@@ -102,10 +102,10 @@ export async function POST(req: NextRequest) {
   }
 
   // save passcode
+  console.log({ passcode })
   try {
     const createSessionRes = await setItem({
-      name: `sessions`,
-      key: 'passcode',
+      name: `passcodes`,
       id: passcode.id,
       payload: JSON.stringify(passcode)
     })

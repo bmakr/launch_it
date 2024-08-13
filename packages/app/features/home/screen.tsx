@@ -19,7 +19,7 @@ import { ChevronDown, ChevronUp, X, ArrowRightCircle, } from '@tamagui/lucide-ic
 import { useState, useEffect } from 'react'
 import { Platform } from 'react-native'
 import { useLink, useSearchParams } from 'solito/navigation'
-import { Footer } from '../../shared'
+import { Footer } from 'app/shared'
 
 export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
   // pages mode is for next routing purposes so we don't need it
@@ -30,11 +30,12 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     const toastParams = params?.get('toast')
-    if (toastParams === 'loggedOut') {
+    if (toastParams === 'loggedOut' || toastParams === 'expired') {
       // const toastController = useToastController()
       // toastController.show('You have been logged out')
       const toastMessagesKv = {
         loggedOut: 'You have been logged out',
+        expired: 'Your session has expired. Please log in',
       }
       toast.show('Actual Alert', {
         message: toastMessagesKv[toastParams],
@@ -61,16 +62,21 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
         >
           {Platform.OS === 'web' && (
             <>
-              {/* <Image src="/logo.png" alt="Actual Logo" w="$6" h="$3" ai='flex-start' />
-            <Bot size="$3" ai='flex-start' /> */}
-              <View ml='auto'>
+              <View ml='auto' h={100}>
                 <SwitchThemeButton />
               </View>
             </>
           )}
         </XStack>
 
-        <View bg="white" w='$10' h='$5' ai='center' jc='center'>
+        <View
+          mt={100}
+          bg="white"
+          w='$10'
+          h='$5'
+          ai='center'
+          jc='center'
+        >
           <Image ai='center' src="/logo-blue.png" alt="Actual Logo" w="$10" h="$5" />
         </View>
 
@@ -99,4 +105,3 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
     </>
   )
 }
-

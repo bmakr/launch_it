@@ -1,36 +1,36 @@
+import { useEffect, useState } from 'react'
 import { Auth, AuthConfig } from '../../../shared/Auth'
 import { useRouter } from 'solito/navigation'
-import { useEffect, useState } from 'react'
 
-export function SignupScreen({ signup }: { signup: any }) {
+export function LoginScreen({ login }: { login: any }) {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [val, setVal] = useState('')
   const [status, setStatus] = useState<'sending' | '' | 'error' | 'success'>('')
   const [error, setError] = useState('')
 
+  // trigger useEffect
+  function handler({ val }: { val: string }) {
+    setStatus('sending')
+  }
   // validate the input
   function validate({ email }: { email: string }) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
   }
 
-  // trigger useEffect
-  async function handler() {
-    setStatus('sending')
-  }
-
-  // send the write request
+  // send the request
   useEffect(() => {
     if (status !== 'sending') return // skip unless sending
+
     // check the input
-    if (!email) {
+    if (!val) {
       setError('Please enter an email address')
       setStatus('error')
       return
     }
 
     // prep the input
-    const cleanEmail = email.trim().toLowerCase()
+    const cleanEmail = val.trim().toLowerCase()
 
     // validate the input
     const validated = validate({ email: cleanEmail })
@@ -43,7 +43,8 @@ export function SignupScreen({ signup }: { signup: any }) {
     // send the request
     async function sendRequest() {
       try {
-        const response = await signup({ email: cleanEmail })
+        const response = await login({ val: cleanEmail })
+        console.log({ response })
         // check for error
         if (response.error) {
           setError(response.error)
@@ -58,22 +59,22 @@ export function SignupScreen({ signup }: { signup: any }) {
       }
     }
 
-    sendRequest()
+    sendRequest() // send the request
   }, [status])
 
   const authConfig: AuthConfig = {
-    title: 'Sign Up',
+    title: 'Log In',
     placeholder: 'email',
-    description: 'Next-Level Learning',
-    buttonText: 'Sign Up',
-    afterText: 'Free to Join. Unsubscribe anytime.',
-    linkText: 'I ALREADY HAVE AN ACCOUNT',
-    href: '/auth/login',
+    description: 'Enter your email to receive a security code',
+    buttonText: 'Send',
+    afterText: 'You\'ll receive a security code by email',
+    linkText: 'I NEED TO SIGN UP',
+    href: '/auth/signup',
     handler,
-    val: email,
-    setVal: setEmail,
+    setVal,
+    val,
     status,
-    error,
+    error
   }
 
   return (

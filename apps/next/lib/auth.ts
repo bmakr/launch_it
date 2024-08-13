@@ -1,6 +1,8 @@
 'use server'
 
+import { error } from "console";
 import { SignJWT, jwtVerify } from "jose";
+import { nowInSeconds } from "lib";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,7 +13,7 @@ export async function encrypt(payload: any) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("10 sec from now")
+    .setExpirationTime("1 year from now")
     .sign(key);
 }
 
@@ -22,55 +24,95 @@ export async function decrypt(input: string): Promise<any> {
   return payload;
 }
 
-export async function login(formData: FormData) {
-  // Verify credentials && get the user
+export async function login({ val }: { val: string }) {
+  let response
+  const endpoint = `${process.env.API_URL}/${process.env.API_ENDPOINT_LOGIN}`
+  console.log({ endpoint})
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ val })
+    })
 
-  const user = { email: formData.get("email"), name: "John" };
+    console.log({ res })
 
-  // Create the session
-  const expires = new Date(Date.now() + 10 * 1000);
-  const session = await encrypt({ user, expires });
+    response = await res.json()
+    console.log({ response })
 
-  // Save the session in a cookie
-  cookies().set("session", session, { expires, httpOnly: true });
+  } catch (e) {
+    console.log({ error: e })
+    return { error: e }
+  }
+
+  return response
 }
 
-export async function logout() {
-  // Destroy the session
-  cookies().set("session", "", { expires: new Date(0) });
-}
+export async function logout({ id }: { id: string; }) {
+  // Save loggedoutat in db
+  let response
+  try {
+    // call logout endpoint
+    const endpoint = `${process.env.API_URL}/${process.env.API_ENDPOINT_LOGOUT}/${id}`
+    const res = await fetch(endpoint, {
+      method: 'POST',
+    })
+    response = await res.json()
+  } catch (e) {
+    console.log('logout()', { e })
+    response = { error: e }
+  }
 
-export async function signup() {
-  // Destroy the session
-  cookies().set("session", "", { expires: new Date(0) });
+  if (response.error) {
+    console.log('logout()', { response })
+    return response
+  }
+
+  // delete session coookie
+  cookies().delete('session')
+
+  return response
 }
 
 export async function getSession() {
-  const session = cookies().get("session")?.value;
-  if (!session) return null;
-  return await decrypt(session);
+  const session = cookies().get('session')?.value;
+  if (!session) return null
+  try {
+    const decrypted = await decrypt(session)
+    const now = nowInSeconds()
+    console.log({ now })
+
+    if (decrypted.payload?.exp && now < decrypted.payload.exp) {
+      return { error: 'Session expired' }
+    }
+    return decrypted
+  } catch (e: any) {
+    console.error(e)
+    return null
+  }
+  
 }
 
-export async function updateSession(request: NextRequest) {
-  const session = request.cookies.get("session")?.value;
-  if (!session) return;
+// export async function updateSession(request: NextRequest) {
+//   const session = request.cookies.get("session")?.value;
+//   if (!session) return;
 
-  // Refresh the session so it doesn't expire
-  const parsed = await decrypt(session);
-  parsed.expires = new Date(Date.now() + 10 * 1000);
-  const res = NextResponse.next();
-  res.cookies.set({
-    name: "session",
-    value: await encrypt(parsed),
-    httpOnly: true,
-    expires: parsed.expires,
-  });
-  return res;
-}
+//   // Refresh the session so it doesn't expire
+//   const parsed = await decrypt(session);
+//   parsed.expires = new Date(Date.now() + 10 * 1000);
+//   const res = NextResponse.next();
+//   res.cookies.set({
+//     name: "session",
+//     value: await encrypt(parsed),
+//     httpOnly: true,
+//     expires: parsed.expires,
+//   });
+//   return res;
+// }
 
 
 export async function verify({ val, id }: { val: string, id: string; }) {
-  const res = await fetch(`${process.env.API_URL}${process.env.API_ENDPOINT_SIGNUP}${id}`, {
+  const endpoint = `${process.env.API_URL}/${process.env.API_ENDPOINT_VERIFY}/${id}`
+  const res = await fetch(endpoint, {
     method: 'POST',
     body: JSON.stringify({
       val
@@ -84,7 +126,6 @@ export async function verify({ val, id }: { val: string, id: string; }) {
   }
 
   const { user } = response
-  console.log({ user })
 
   // Create the session
   // const expires = new Date(Date.now() + (24 * 60 * 60 * 1000)); // 24 hours
@@ -93,13 +134,30 @@ export async function verify({ val, id }: { val: string, id: string; }) {
   // Save the session in a cookie
   cookies().set('session', encrypted, {
     // expires, 
-    // httpOnly: true
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" ? true : false,
     sameSite: "strict",
     maxAge: 60 * 60 * 24 * 30, // 30d
     path: "/",
   });
+
+  return response
+}
+
+export async function signup({ email }: { email: string; }) {
+  // Create a user && send a verification email
+  const endpoint = `${process.env.API_URL}/${process.env.API_ENDPOINT_SIGNUP}`
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    body: JSON.stringify({
+      val: email
+    })
+  })
+
+  const response = await res.json()
+  if (response.error) {
+    return response
+  }
 
   return response
 }
