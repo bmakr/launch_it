@@ -15,7 +15,7 @@ export function SignupScreen({ signup }: { signup: any }) {
   }
 
   // trigger useEffect
-  async function handler(event: any) {
+  async function handler() {
     setStatus('sending')
   }
 

@@ -61,6 +61,7 @@ export function ProfileScreen({
     if (status !== 'logout') return
     async function logoutUser() {
       await logout({ id: user.id })
+
       router.push(`/?toast=loggedOut`)
     }
     logoutUser()

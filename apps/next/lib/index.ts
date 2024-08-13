@@ -1,4 +1,4 @@
-export { signup, verify, login, logout } from './auth'
+export { signup, verify, login, logout, getSession } from './auth'
 export { getItem, setItem, deleteItem } from './upstash'
 export { sendEmail } from './email'
 
