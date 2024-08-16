@@ -5,7 +5,7 @@ import { ChevronLeft } from '@tamagui/lucide-icons'
 import { Header } from '../../shared'
 
 interface ProfileScreenProps {
-  getSession: () => Promise<{ error?: string; id?: string; user?: any }>;
+  getSession: () => Promise<any>;
   logout: (params: { id: string }) => Promise<void>;
   interval?: number;
 }

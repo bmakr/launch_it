@@ -24,7 +24,7 @@ export type AuthConfig = {
   setStatus?: React.Dispatch<React.SetStateAction<'sending' | '' | 'error' | 'success'>>;
   setVal: React.Dispatch<React.SetStateAction<string>>;
   val: string;
-  status: 'sending' | 'resend' | '' | 'error' | 'success';
+  status: 'sending' | 'resend' | 'resent' | '' | 'error' | 'success';
   error: string;
 }
 

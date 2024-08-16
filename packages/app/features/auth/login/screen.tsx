@@ -1,83 +1,75 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Auth, AuthConfig } from '../../../shared/Auth'
 import { useRouter } from 'solito/navigation'
 
-export function LoginScreen({ login }: { login: any }) {
+interface LoginProps {
+  login: (data: { val: string }) => Promise<{ passcodeId: string } | { error: string }>
+}
+
+export function LoginScreen({ login }: LoginProps) {
   const router = useRouter()
-  const [val, setVal] = useState('')
-  const [status, setStatus] = useState<'sending' | '' | 'error' | 'success'>('')
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'' | 'resent' | 'resend' | 'sending' | 'error' | 'success'>('')
   const [error, setError] = useState('')
 
-  // trigger useEffect
-  function handler({ val }: { val: string }) {
-    setStatus('sending')
-  }
-  // validate the input
-  function validate({ email }: { email: string }) {
+  const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
   }
 
-  // send the request
-  useEffect(() => {
-    if (status !== 'sending') return // skip unless sending
+  const handleLogin = useCallback(async () => {
+    setStatus('sending')
+    setError('')
 
-    // check the input
-    if (!val) {
+    const cleanEmail = email.trim().toLowerCase()
+
+    if (!cleanEmail) {
       setError('Please enter an email address')
       setStatus('error')
       return
     }
 
-    // prep the input
-    const cleanEmail = val.trim().toLowerCase()
-
-    // validate the input
-    const validated = validate({ email: cleanEmail })
-    if (!validated) {
+    if (!validateEmail(cleanEmail)) {
       setError('Please enter a correct email address')
       setStatus('error')
       return
     }
 
-    // send the request
-    async function sendRequest() {
-      try {
-        const response = await login({ val: cleanEmail })
-        console.log({ response })
-        // check for error
-        if (response.error) {
-          setError(response.error)
-          setStatus('error')
-          return
-        }
-        // success
-        router.push(`/auth/verify/${response.passcodeId}`)
-      } catch (e) {
-        setError(`Error: ${e}`)
+    try {
+      const response = await login({ val: cleanEmail })
+      if ('error' in response) {
+        setError(response.error)
         setStatus('error')
+      } else {
+        router.push(`/auth/verify/${response.passcodeId}`)
+        setStatus('success')
       }
+    } catch (e) {
+      setError(`Error: ${e instanceof Error ? e.message : String(e)}`)
+      setStatus('error')
     }
+  }, [email, login, router])
 
-    sendRequest() // send the request
-  }, [status])
+  useEffect(() => {
+    if (status === 'sending') {
+      handleLogin()
+    }
+  }, [status, handleLogin])
 
   const authConfig: AuthConfig = {
     title: 'Log In',
     placeholder: 'email',
     description: 'Enter your email to receive a security code',
     buttonText: 'Send',
-    afterText: 'You\'ll receive a security code by email',
+    afterText: "You'll receive a security code by email",
     linkText: 'I NEED TO SIGN UP',
     href: '/auth/signup',
-    handler,
-    setVal,
-    val,
+    handler: () => setStatus('sending'),
+    setVal: setEmail,
+    val: email,
     status,
     error
   }
 
-  return (
-    <Auth authConfig={authConfig} />
-  )
+  return <Auth authConfig={authConfig} />
 }

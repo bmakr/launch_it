@@ -1,31 +1,34 @@
-import { Redis } from "ioredis";
-import { getClient } from "."
+'use server'
+
+import { Redis } from 'ioredis'
+import { getClient } from '.'
+import { RedisInstance } from 'types'
+
+interface DeleteItemParams {
+  name: RedisInstance;
+  key?: string;
+  id: string;
+}
 
 export async function deleteItem({
   name,
   key,
   id,
-}: {
-  name: string;
-  key?: string
-  id: string
-}) {
-  let conn: Redis
-  try {
-    conn = await getClient({ name }) as Redis
-    if (!conn) return
-  } catch (e) {
-    console.log({ error: e })
-    return
-  }
+}: DeleteItemParams): Promise<number | undefined> {
+  let conn: Redis;
 
-  // key is optional
-  const fullKey = key ? `${name}:${key}:${id}` : `${name}:${id}`
   try {
-    const res = await conn.del(fullKey)
-    return res
-  } catch (e) {
-    console.log({ error: e })
-    return
+    conn = await getClient({ name }) as Redis;
+    if (!conn) {
+      console.log('Failed to establish Redis connection')
+      return
+    }
+
+    const fullKey = key ? `${name}:${key}:${id}` : `${name}:${id}`;
+    const result = await conn.del(fullKey);
+    return result;
+  } catch (error) {
+    console.error('Error in deleteItem:', error);
+    return;
   }
 }

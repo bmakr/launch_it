@@ -27,3 +27,16 @@ export type Session = {
   loggedOutAt: number;
   active: boolean;
 }
+
+
+// Define an enum for the available Redis instances
+export enum RedisInstance {
+  Users = 'users',
+  Sessions = 'sessions',
+  Passcodes = 'passcodes',
+}
+
+// Define the payload type
+export interface JWTPayload {
+  [key: string]: any;
+}

@@ -1,81 +1,79 @@
-import { useEffect, useState } from 'react'
-import { Auth, AuthConfig } from '../../../shared/Auth'
+
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useParams } from 'solito/navigation'
+import { Auth, AuthConfig } from '../../../shared/Auth'
 
-export function VerifyScreen({
-  verify,
-}: {
-  verify: any
-}) {
+interface VerifyScreenProps {
+  verify: (params: { val: string; id: string }) => Promise<{ error?: string }>
+  resend: ({ id }: { id: string; }) => Promise<{ passcodeId: string; } | { error: string }>
+}
+
+export function VerifyScreen({ verify, resend }: VerifyScreenProps) {
   const router = useRouter()
-  const { id } = useParams()
-  // const { id } = useParams()
+  const { id }: { id: string } = useParams()
   const [code, setCode] = useState('')
-  const [status, setStatus] = useState<'sending' | 'resend' | '' | 'error' | 'success'>('')
+  const [status, setStatus] = useState<'sending' | 'resend' | 'resent' | '' | 'error' | 'success'>('')
   const [error, setError] = useState('')
-  // const [sessionId, setSessionId] = useState('')
 
-  // validate the input
-  function validate({ val }: { val: string }) {
-    if (val.length < 6 || val.length > 6) {
+  const validate = useCallback((val: string): boolean => {
+    if (val.length !== 6) {
       setError('Please enter a 6-digit code')
       setStatus('error')
-      return true
+      return false
     }
-  }
+    return true
+  }, [])
 
-  // handle success
   useEffect(() => {
-    if (status !== 'success') return
-    router.push(`/profile`)
-  }, [status])
+    if (status === 'success') {
+      router.push('/profile')
+    }
+  }, [status, router])
 
-  // handle sending
-  useEffect(() => {
-    if (status !== 'sending') return
-    // prep the input
+  const handleVerify = useCallback(async () => {
+    setError('')
+
     const cleanCode = code.trim()
-    // validate the input
-    validate({ val: cleanCode })
-
-    // send the request
-    async function sendRequest() {
-      let response
-      try {
-        response = verify({ val: cleanCode, id })
-      } catch (e) {
-        setError(`Error: ${e}`)
-        setStatus('error')
-        return
-      }
-
-      // handle the response
-      if (response.error) {
-        setError(response.error)
-        setStatus('error')
-        return
-      }
-
-      // success
-      setStatus('success')
+    if (!validate(cleanCode)) {
+      setError('Please enter a 6-digit code')
+      return
     }
 
-    sendRequest()
-  }, [status])
+    try {
+      const response = await verify({ val: cleanCode, id: id as string })
+      if (response.error) {
+        throw new Error(response.error)
+      }
+      setStatus('success')
+    } catch (e) {
+      setError(`Error: ${e instanceof Error ? e.message : String(e)}`)
+      setStatus('error')
+    }
+  }, [code, verify, router])
 
-  function handler() {
-    setStatus('sending')
-  }
 
-  // handle resend
-  useEffect(() => {
-    if (status !== 'resend') return
-    // TODO: implement resend
-  }, [status])
-
-  function resend() {
+  const resendHandler = useCallback(() => {
     setStatus('resend')
-  }
+    async function resendPasscode() {
+      try {
+        const res = await resend({ id })
+        if (res) {
+          setStatus('resent')
+          setError('')
+        }
+      } catch (e) {
+        setError(`Error: ${e instanceof Error ? e.message : String(e)}`)
+        setStatus('error')
+      }
+    }
+    resendPasscode()
+  }, [])
+
+  useEffect(() => {
+    if (status === 'sending') {
+      handleVerify()
+    }
+  }, [status, handleVerify])
 
   const authConfig: AuthConfig = {
     title: 'Check Your Email',
@@ -84,15 +82,13 @@ export function VerifyScreen({
     buttonText: 'Verify',
     afterText: 'We sent you a security code by email',
     linkText: 'RESEND SECURITY CODE',
-    resend,
-    handler,
+    resend: () => resendHandler(),
+    handler: () => setStatus('sending'),
     setVal: setCode,
     val: code,
-    error: error,
+    error,
     status,
   }
 
-  return (
-    <Auth authConfig={authConfig} />
-  )
+  return <Auth authConfig={authConfig} />
 }

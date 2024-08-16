@@ -1,174 +1,60 @@
-import { createId, getItem, nowInSeconds, sendEmail, setItem } from 'lib'
-import { KeyValues, Passcode } from 'types'
+import { 
+  createPasscode, getBody, getEmailsKv, savePasscode, sendVerificationEmail, validateEmail, deleteExistingPasscode, deactivateExistingSession
+} from 'lib'
 import { NextRequest, NextResponse } from 'next/server'
 
+/*
+  login route
+  POST /api/auth/login
+  input body: { val: string } as stringified JSON
+  output: { passcodeId: string } as JSON
+
+  1. validate email
+  2. check for existing email
+  3. If email is not in db, return error
+  4. If passcode exists, delete it (use activeUserIdsKvPasscodes)
+  5. Deactivate existing session, if it exists (use activeUserIdsKvSessions)
+  6. Create and save new passcode
+  7. Send email with passcode
+*/
 export async function POST(req: NextRequest) {
-  // get body
-  let body
   try {
-    body = await req.json()
-  } catch (e) {
-    console.log({ error: e })
-    return NextResponse.json({ error: 'Internal error: body' }, { status: 400 })
-  }
+    const body = await getBody({ req })
+    const { val } = body
 
-  console.log({ body })
+    // Validate email
+    const email = val
+    await validateEmail({ email })
 
-  // check if val exists
-  if (!body.val) {
-    return NextResponse.json({ error: 'Email is required' }, { status: 400 })
-  }
+    // Check for existing email in users:emailsKv
+    const emailsKv = await getEmailsKv()
 
-  // validate email
-  const email = body.val
-  function validate({ email }: { email: string }) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-  const validated = validate({ email })
-  if (!validated) {
-    return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
-  }
-
-  // check for existing email in users:emailsKv
-  let emailsKv: KeyValues = {}
-  try {
-    emailsKv = await getItem({
-      name: `users`,
-      key: 'emailsKv',
-    }) as KeyValues
-  } catch (e) {
-    return NextResponse.json({ error: 'Internal Error: fetching emailsKv in login.' }, { status: 400 })
-  }
-
-  console.log({ emailsKv })
-  if (!emailsKv) {
-    return NextResponse.json({ error: 'Internal Error: getItem emailsKv in /login.' }, { status: 400 })
-  }
-
-  if (!emailsKv[email]) {
-    return NextResponse.json({ error: 'That email addess does not exist in our db' }, { status: 400 })
-  }
-
-  // get userId from users:emailsKv
-  let userId
-  try {
-    userId = emailsKv[email]
-    console.log({ userId })
+    const userId = emailsKv[email]
     if (!userId) {
-      return NextResponse.json({ error: 'Internal error: /login userId = response[email]' }, { status: 500 })
+      throw new Error('That email address does not exist in our database, please sign up')
     }
-  } catch (e) {
-    console.log({ error: e })
-    return NextResponse.json({ error: 'Internal error: /login getItem users:emailsKv' }, { status: 500 })
-  }
 
-  // look for existing sessionId in sessions:activeUserIdsKv
-  let sessionId, activeUserIdsKv
-  try {
-    activeUserIdsKv = await getItem({
-      name: 'sessions',
-      key: 'activeUserIdsKv'
+    // if existing passcode then delete it
+    await deleteExistingPasscode({ userId })
+
+    // if it exists
+    // set existing session to active: false 
+    await deactivateExistingSession({ userId }) 
+
+    // Create and save passcode
+    const passcode = await createPasscode({ userId })
+    await savePasscode({ passcode })
+
+    // Send email with passcode
+    await await sendVerificationEmail({
+      email,
+      passcode
     })
 
-    if (activeUserIdsKv[userId]) {
-      sessionId = activeUserIdsKv[userId]
-    }
-  } catch (e) {
-    console.log({ error: e })
-    return NextResponse.json({ error: 'Internal error: /login getItem sessions:activeUserIdsKv' }, { status: 500 })
+    return NextResponse.json({ passcodeId: passcode.id })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  // if active session exists set to active: false
-  if (sessionId) {
-    let session
-    try {
-      session = await getItem({
-        name: 'sessions',
-        id: sessionId
-      })
-      if (!session) {
-        return NextResponse.json({ error: 'Internal error: /login getItem sessions:sessionId' }, { status: 500 })
-      }
-    } catch (e) {
-      console.log({ error: e })
-      return NextResponse.json({ error: 'Internal error: /login getItem sessions:sessionId' }, { status: 500 })
-    }
-
-    // update session
-    session.active = false
-    try {
-      const res = await setItem({
-        name: 'sessions',
-        id: sessionId,
-        payload: JSON.stringify(session)
-      })
-      if (!res) {
-        return NextResponse.json({ error: 'Internal error: /login setItem sessions:sessionId' }, { status: 500 })
-      }
-    } catch (e) {
-      console.log({ error: e })
-      return NextResponse.json({ error: 'Internal error: /login setItem sessions:sessionId' }, { status: 500 })
-    }
-  }
-
-  // remove session from activeUserIdsKv
-  try {
-    delete activeUserIdsKv[userId]
-    await setItem({
-      name: 'sessions',
-      key: 'activeUserIdsKv',
-      payload: JSON.stringify(activeUserIdsKv)
-    })
-  } catch (e) {
-    return NextResponse.json({ error: 'Internal error: /login setItem sessions:activeUserIdsKv' }, { status: 500 })
-  }
-
-  // create a passcode
-  const passcode: Passcode = {
-    id: createId(),
-    createdAt: nowInSeconds(),
-    code: Math.floor(100000 + Math.random() * 900000).toString(),
-    userId
-  }
-
-  // save passcode
-  try {
-    const res = await setItem({
-      name: `passcodes`,
-      id: passcode.id,
-      payload: JSON.stringify(passcode)
-    })
-    if (!res) {
-      return NextResponse.json({ error: 'Internal error: /login setItem passcode' }, { status: 500 })
-    }
-  } catch (e) {
-    console.log({ error: e })
-    return NextResponse.json({ error: 'Internal error: /login save passcode' }, { status: 500 })
-  }
-
-
-  // send email
-  try {
-    const emailRes = await sendEmail({
-      transactionalId: 'clyzxp02l047ik84p9gx7nhd1',
-      to: email,
-      dataVariables: {
-        passcode: passcode.code,
-        url: `https://actualed.com/auth/verify/${passcode.id}`
-      }
-    })
-    console.log({ emailRes })
-    const { success, message } = emailRes as { success: boolean; message: string; }
-    console.log({ success, message })
-    if (!success) {
-      return NextResponse.json({ error: `Internal error: /login send email ${message}` }, { status: 500 })
-    }
-  } catch (e) {
-    console.log({ error: e })
-    return NextResponse.json({ error: `Internal error: /login send email generic ${e}` }, { status: 500 })
-  }
-
-  // return passcode id to client
-  return NextResponse.json({ passcodeId: passcode.id })
 }
+
