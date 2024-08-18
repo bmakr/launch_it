@@ -5,20 +5,16 @@ import {
   H1,
   Paragraph,
   Separator,
-  Sheet,
   useToastController,
   SwitchThemeButton,
-  SwitchRouterButton,
   XStack,
   YStack,
   Text,
   Image,
-  Toast
 } from '@my/ui'
-import { ChevronDown, ChevronUp, X, ArrowRightCircle, } from '@tamagui/lucide-icons'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Platform } from 'react-native'
-import { useLink, useSearchParams } from 'solito/navigation'
+import { useLink } from 'solito/navigation'
 import { Footer } from 'app/shared'
 
 export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
@@ -30,14 +26,13 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     const toastParams = params?.get('toast')
-    if (toastParams === 'loggedOut' || toastParams === 'expired') {
-      // const toastController = useToastController()
-      // toastController.show('You have been logged out')
+    if (toastParams === 'loggedOut' || toastParams === 'expired' || toastParams === 'login') {
       const toastMessagesKv = {
         loggedOut: 'You have been logged out',
         expired: 'Your session has expired. Please log in',
+        login: 'Please log in to access that page'
       }
-      toast.show('Actual Alert', {
+      toast.show('Actualed Alert', {
         message: toastMessagesKv[toastParams],
         // native: false,
       })

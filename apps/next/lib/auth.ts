@@ -79,7 +79,6 @@ export async function getSession() {
   try {
     const decrypted = await decrypt(session)
     const now = nowInSeconds()
-    console.log({ now })
 
     if (decrypted.payload?.exp && now < decrypted.payload.exp) {
       return { error: 'Session expired' }

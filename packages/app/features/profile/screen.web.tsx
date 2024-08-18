@@ -24,13 +24,21 @@ export function ProfileScreen({
     let intervalId
     async function checkSession() {
       const session = await getSession()
-      if (session.error) {
+      if (session === null) {
+        setTimeout(() => {
+          if (intervalId) {
+            router.push('/?toast=login')
+            return
+          }
+        }, 1000)
+      }
+      if (session?.error) {
         console.log('session.error', session.error)
         setError(session.error)
         setStatus('error')
         clearInterval(intervalId)
       }
-      if (session && session.id) {
+      if (session?.id) {
         setSessionId(session.id)
         setUser(session.user)
         setStatus('success')
