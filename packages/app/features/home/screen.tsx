@@ -1,6 +1,3 @@
-import { useEffect } from 'react'
-import { Platform } from 'react-native'
-import { useLink } from 'solito/navigation'
 import {
   View,
   Anchor,
@@ -15,6 +12,9 @@ import {
   Text,
   Image,
 } from '@my/ui'
+import { useEffect } from 'react'
+import { Platform } from 'react-native'
+import { useLink } from 'solito/navigation'
 import { Footer } from 'app/shared'
 
 const TOAST_MESSAGES = {
