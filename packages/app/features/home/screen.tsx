@@ -17,91 +17,86 @@ import { Platform } from 'react-native'
 import { useLink } from 'solito/navigation'
 import { Footer } from 'app/shared'
 
-const TOAST_MESSAGES = {
-  loggedOut: 'You have been logged out',
-  expired: 'Your session has expired. Please log in',
-}
-
-export function HomeScreen() {
+export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
+  // pages mode is for next routing purposes so we don't need it
+  // const linkTarget = pagesMode ? '/pages-example-user' : '/user' 
   const toast = useToastController()
-  const linkProps = useLink({ href: `/auth/signup` })
 
+  // trigger toast
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search)
-      const toastParam = params.get('toast')
-      if (toastParam && TOAST_MESSAGES[toastParam]) {
-        toast.show('Actual Alert', {
-          message: TOAST_MESSAGES[toastParam],
-        })
+    const params = new URLSearchParams(document.location.search);
+    const toastParams = params?.get('toast')
+    if (toastParams === 'loggedOut' || toastParams === 'expired' || toastParams === 'login') {
+      const toastMessagesKv = {
+        loggedOut: 'You have been logged out',
+        expired: 'Your session has expired. Please log in',
+        login: 'Please log in to access that page'
       }
+      toast.show('Actualed Alert', {
+        message: toastMessagesKv[toastParams],
+        // native: false,
+      })
     }
-  }, [toast])
+  }, [])
 
-  return (
-    <YStack f={1} jc="center" ai="center" gap="$8" p="$4" bg="$background" w={400} mx="auto">
-      <Header />
-      <Logo />
-      <Content />
-      <Actions linkProps={linkProps} />
-      <Footer />
-    </YStack>
-  )
-}
+  const linkProps = useLink({
+    href: `/auth/signup`,
+  })
 
-function Header() {
-  return (
-    <XStack
-      pos="absolute"
-      w="100%"
-      t="$6"
-      gap="$6"
-      jc="flex-start"
-      fw="wrap"
-      $sm={{ pos: 'relative', t: 0 }}
-    >
-      {Platform.OS === 'web' && (
-        <View ml="auto" h={100}>
-          <SwitchThemeButton />
-        </View>
-      )}
-    </XStack>
-  )
-}
-
-function Logo() {
-  return (
-    <View mt={100} bg="white" w="$10" h="$5" ai="center" jc="center">
-      <Image ai="center" src="/logo-blue.png" alt="Actual Logo" w="$10" h="$5" />
-    </View>
-  )
-}
-
-function Content() {
-  return (
-    <YStack gap="$4">
-      <H1 ta="center" col="$color12">
-        Welcome to Actual.
-      </H1>
-      <Paragraph col="$color10" ta="center">
-        Actionable Knowledge in the Palm of Your Hand
-      </Paragraph>
-      <Separator />
-      <Paragraph ta="center">
-        Are you ready for next-level intelligence?
-      </Paragraph>
-      <Separator />
-    </YStack>
-  )
-}
-
-function Actions({ linkProps }) {
   return (
     <>
-      <Button {...linkProps}>SIGN UP</Button>
-      <Anchor href="/auth/login" textDecorationLine="none">
-        <Text col="$gray7">I ALREADY HAVE AN ACCOUNT</Text>
-      </Anchor>
+      <YStack f={1} jc="center" ai="center" gap="$8" p="$4" bg="$background" w={400} mx='auto'>
+        <XStack
+          pos="absolute"
+          w="100%"
+          t="$6"
+          gap="$6"
+          jc="flex-start"
+          fw="wrap"
+          $sm={{ pos: 'relative', t: 0 }}
+        >
+          {Platform.OS === 'web' && (
+            <>
+              <View ml='auto' h={100}>
+                <SwitchThemeButton />
+              </View>
+            </>
+          )}
+        </XStack>
+
+        <View
+          mt={20}
+          bg="white"
+          w='$10'
+          h='$5'
+          ai='center'
+          jc='center'
+        >
+          <Image ai='center' src="/logo-blue.png" alt="Actual Logo" w="$10" h="$5" />
+        </View>
+
+        <YStack gap="$4">
+          <H1 ta="center" col="$color12">
+            Welcome to Actual.
+          </H1>
+          <Paragraph col="$color10" ta="center">
+            Actionable Knowledge in the Palm of Your Hand
+          </Paragraph>
+          <Separator />
+          <Paragraph ta="center">
+            Are you ready for next-level intelligence?
+          </Paragraph>
+          <Separator />
+        </YStack>
+
+        <Button {...linkProps}>SIGN UP</Button>
+        <Anchor href='/auth/login' textDecorationLine='none'>
+          <Text col='$gray7'>I ALREADY HAVE AN ACCOUNT</Text>
+        </Anchor>
+
+        <Footer />
+
+      </YStack>
     </>
   )
 }

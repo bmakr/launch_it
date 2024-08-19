@@ -36,8 +36,8 @@ export function LoginScreen({ login }: LoginProps) {
     }
 
     try {
-      const response = await login({ val: cleanEmail })
-      if ('error' in response) {
+      const response: { error?: string; passcodeId?: string; } = await login({ val: cleanEmail })
+      if (response?.error) {
         setError(response.error)
         setStatus('error')
       } else {

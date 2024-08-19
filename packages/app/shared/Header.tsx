@@ -1,10 +1,20 @@
-import { Anchor, Image, XStack } from "@my/ui";
+import { Anchor, Image, XStack, View } from "@my/ui";
 
 export function Header() {
   return (
     <XStack w={400} mx='auto' mt='$6'>
       <Anchor href='/'>
-        <Image src="/logo-blue.png" alt="Actual Logo" w="$5" h="$2" />
+        <View
+          mt={100}
+          bg="white"
+          bw={.5}
+          boc='white'
+          ai='center'
+          jc='center'
+        >
+          <Image src="/logo-blue.png" alt="Actual Logo" w="$7" h="$3" />
+        </View>
+
       </Anchor>
     </XStack>
   )
