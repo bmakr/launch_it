@@ -1,6 +1,6 @@
-import { createPasscode, nowInSeconds, sendVerificationEmail } from 'lib';
-import { NextRequest, NextResponse } from 'next/server';
-import { Params, Session } from 'types';
+import { createPasscode, nowInSeconds, sendVerificationEmail } from 'lib'
+import { NextRequest, NextResponse } from 'next/server'
+import { Params, Session } from 'types'
 import { Redis } from '@upstash/redis'
 
 /*
