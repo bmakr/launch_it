@@ -68,13 +68,13 @@ export async function POST(req: NextRequest) {
   // update user with new sessionId
   try {
     // get existing session id for user
-    const existingSessionId = redis.get(`sessions.byUserId:${userId}`)
+    const existingSessionId = redis.get(`sessions:sessionIdByUserId:${userId}`)
     const session: Session = { userId, passcode, createdAt: nowInSeconds() }
 
     // execute pipeline to create new session and delete old
     const pipe = redis.pipeline()
     pipe.del(`sessions:${existingSessionId}`) // delete existing session
-    pipe.set(`sessions:sessionIdByUserIdbyUserId:${userId}`, sessionId) // userId index
+    pipe.set(`sessions:sessionIdByUserId:${userId}`, sessionId) // userId index
     pipe.set(`sessions:${sessionId}`, session) // save session
     await pipe.exec()
   } catch(e) {
