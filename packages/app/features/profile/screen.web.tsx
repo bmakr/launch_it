@@ -102,7 +102,7 @@ export function ProfileScreen({
       )}
       {status === 'loading' && (
         <YStack ai='center'>
-          <Spinner />
+          <Spinner mt={100} />
         </YStack>
       )}
     </>
