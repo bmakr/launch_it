@@ -36,7 +36,6 @@ export function SignupScreen({ signup }: SignupProps) {
 
     try {
       const response = await signup({ email: trimmedEmail })
-      console.log({ response })
       if ('error' in response) {
         setError(response.error)
         setStatus('error')
