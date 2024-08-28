@@ -3,7 +3,7 @@ import { Auth, AuthConfig } from '../../../shared/Auth'
 import { useRouter } from 'solito/navigation'
 
 interface LoginProps {
-  login: (data: { val: string }) => Promise<{ passcodeId: string } | { error: string }>
+  login: (data: { val: string }) => Promise<{ id?: string; error?: string; status: number; }>
 }
 
 export function LoginScreen({ login }: LoginProps) {
@@ -36,12 +36,12 @@ export function LoginScreen({ login }: LoginProps) {
     }
 
     try {
-      const response: { error?: string; passcodeId?: string; } = await login({ val: cleanEmail })
+      const response: { error?: string; id?: string; status: number; } = await login({ val: cleanEmail })
       if (response?.error) {
         setError(response.error)
         setStatus('error')
       } else {
-        router.push(`/auth/verify/${response.passcodeId}`)
+        router.push(`/auth/verify/${response.id}`)
         setStatus('success')
       }
     } catch (e) {

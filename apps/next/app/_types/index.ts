@@ -1,42 +1,19 @@
 export type Val = string;
 
 export type KeyValues = {
-  [key: string]: string;
+  [key: string]: any;
 }
 
 export type Params = { params: { id: string; } }
 
 export type User = {
-  id: string;
   createdAt: number;
   email: string;
   roles: string[];
 }
 
-export type Passcode = {
-  id: string;
-  userId: string;
-  code: string;
-  createdAt: number;
-}
-
 export type Session = {
-  id: string;
-  userId: string;
+  userId: number;
+  passcode: number;
   createdAt: number;
-  loggedOutAt: number;
-  active: boolean;
-}
-
-
-// Define an enum for the available Redis instances
-export enum RedisInstance {
-  Users = 'users',
-  Sessions = 'sessions',
-  Passcodes = 'passcodes',
-}
-
-// Define the payload type
-export interface JWTPayload {
-  [key: string]: any;
 }

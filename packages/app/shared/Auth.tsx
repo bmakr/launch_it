@@ -33,8 +33,6 @@ export function Auth({ authConfig }: { authConfig: AuthConfig }) {
     title, description, placeholder, afterText, buttonText, linkText, href, resend, handler, val, setVal, status, error
   } = authConfig
 
-  console.log(status)
-
   return (
     <>
       <Header />

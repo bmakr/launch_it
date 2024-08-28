@@ -3,7 +3,7 @@ import { useRouter } from 'solito/navigation'
 import { useEffect, useState, useCallback } from 'react'
 
 interface SignupProps {
-  signup: ({ email }: { email: string; }) => Promise<{ passcodeId: string } | { error: string }>
+  signup: ({ email }: { email: string; }) => Promise<{ id: string } | { error: string }>
 }
 
 export function SignupScreen({ signup }: SignupProps) {
@@ -36,11 +36,12 @@ export function SignupScreen({ signup }: SignupProps) {
 
     try {
       const response = await signup({ email: trimmedEmail })
+      console.log({ response })
       if ('error' in response) {
         setError(response.error)
         setStatus('error')
       } else {
-        router.push(`/auth/verify/${response.passcodeId}`)
+        router.push(`/auth/verify/${response.id}`)
         setStatus('success')
       }
     } catch (e) {

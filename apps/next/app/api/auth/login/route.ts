@@ -1,7 +1,9 @@
-import { 
-  createPasscode, getBody, getEmailsKv, savePasscode, sendVerificationEmail, validateEmail, deleteExistingPasscode, deactivateExistingSession
-} from 'lib'
 import { NextRequest, NextResponse } from 'next/server'
+import { Redis } from '@upstash/redis'
+import { 
+  createPasscode, getBody, nowInSeconds, sendVerificationEmail, validateEmail
+} from 'lib'
+import { Session } from 'types'
 
 /*
   login route
@@ -9,52 +11,78 @@ import { NextRequest, NextResponse } from 'next/server'
   input body: { val: string } as stringified JSON
   output: { passcodeId: string } as JSON
 
-  1. validate email
-  2. check for existing email
-  3. If email is not in db, return error
-  4. If passcode exists, delete it (use activeUserIdsKvPasscodes)
-  5. Deactivate existing session, if it exists (use activeUserIdsKvSessions)
-  6. Create and save new passcode
-  7. Send email with passcode
+  validate email
+  check for existing email
+  If email is not in db, return error
+
+  Send email with passcode
+  Save new session
+  If previous session exists, delete it
+  Update user
 */
 export async function POST(req: NextRequest) {
+  // validate
+  let redis, email, userId
   try {
+    redis = Redis.fromEnv()
+    if (!redis) return NextResponse.json({ error: 'Internal error: redis' }, { status: 500 })
     const body = await getBody({ req })
     const { val } = body
 
     // Validate email
-    const email = val
+    email = val
     await validateEmail({ email })
 
-    // Check for existing email in users:emailsKv
-    const emailsKv = await getEmailsKv()
-
-    const userId = emailsKv[email]
+    // Check for existing email
+    userId = await redis.get(`users:emails:${email}`)
     if (!userId) {
-      throw new Error('That email address does not exist in our database, please sign up')
+      return NextResponse.json({ error: 'That email is not in our db. Try again.', status: 400 })
     }
 
-    // if existing passcode then delete it
-    await deleteExistingPasscode({ userId })
+    userId = Number(userId)
+    if (isNaN(userId)) {
+      return NextResponse.json({ error: 'Internal error. /login:userId NaN', status: 500 })
+    }
+  } catch (e) {
+    console.error(e)
+    return NextResponse.json({ error: `Internal error: /login:validation:${e}` }, { status: 500 })
+  }
 
-    // if it exists
-    // set existing session to active: false 
-    await deactivateExistingSession({ userId }) 
-
-    // Create and save passcode
-    const passcode = await createPasscode({ userId })
-    await savePasscode({ passcode })
-
-    // Send email with passcode
+  // send email optimistically
+  let passcode, sessionId
+  try {
+    passcode = createPasscode()
+    sessionId = await redis.incr('sessions:id:counter')
     await await sendVerificationEmail({
       email,
-      passcode
-    })
-
-    return NextResponse.json({ passcodeId: passcode.id })
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      passcode,
+      sessionId
+    })      
+  } catch(e) {
+    console.error(e)
+    return NextResponse.json({ error: `Internal error: sending email /login:${e}` }, { status: 500 })
   }
+
+  // create new session
+  // delete existing session if present
+  // update user with new sessionId
+  try {
+    // get existing session id for user
+    const existingSessionId = redis.get(`sessions.byUserId:${userId}`)
+    const session: Session = { userId, passcode, createdAt: nowInSeconds() }
+
+    // execute pipeline to create new session and delete old
+    const pipe = redis.pipeline()
+    pipe.del(`sessions:${existingSessionId}`) // delete existing session
+    pipe.set(`sessions:sessionIdByUserIdbyUserId:${userId}`, sessionId) // userId index
+    pipe.set(`sessions:${sessionId}`, session) // save session
+    await pipe.exec()
+  } catch(e) {
+    console.error(e)
+    return NextResponse.json({ error: `Internal error: /login:create,delete session:${e}` }, { status: 500 })
+  }
+
+  // success
+  return NextResponse.json({ id: sessionId })
 }
 

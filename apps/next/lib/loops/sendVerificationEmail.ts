@@ -1,6 +1,5 @@
 'use server'
 
-import { Passcode } from 'types';
 import { sendEmail } from './sendEmail';
 
 // Ensure the environment variable is set
@@ -13,7 +12,8 @@ if (!LOOPS_SIGNUP_ID || !API_URL || !API_ENDPOINT_VERIFY) {
 
 interface VerificationEmailParams {
   email: string;
-  passcode: Passcode;
+  passcode: number;
+  sessionId: number;
 }
 
 /**
@@ -23,16 +23,17 @@ interface VerificationEmailParams {
  */
 export async function sendVerificationEmail({
   email, 
-  passcode
+  passcode,
+  sessionId
 }: VerificationEmailParams): Promise<void> {
   try {
-    await sendEmail({
+    return await sendEmail({
       transactionalId: LOOPS_SIGNUP_ID,
       to: email,
       addToAudience: true,
       dataVariables: {
-        passcode: passcode.code,
-        url: `${API_URL}/${API_ENDPOINT_VERIFY}/${passcode.id}`
+        passcode: passcode,
+        url: `${API_URL}/${API_ENDPOINT_VERIFY}/${sessionId}`
       }
     });
   } catch (error) {

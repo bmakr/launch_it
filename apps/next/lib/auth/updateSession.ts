@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { decrypt, encrypt } from './encryption'
-import { JWTPayload } from 'types'
+import { KeyValues } from 'types'
 
 export async function updateSession(req: NextRequest): Promise<NextResponse | undefined> {
   const sessionCookie = req.cookies.get('session');
@@ -13,7 +13,7 @@ export async function updateSession(req: NextRequest): Promise<NextResponse | un
 
   try {
     // Decrypt and parse the session data
-    const sessionData: JWTPayload = await decrypt(sessionCookie.value)
+    const sessionData: KeyValues = await decrypt(sessionCookie.value)
 
     // Create a new response
     const response = NextResponse.next();

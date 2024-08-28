@@ -7,7 +7,7 @@ if (!API_URL || !API_ENDPOINT_RESEND ) {
   throw new Error('Environment variable is not set')
 }
 
-export async function resend({ id }: { id: string; }): Promise<{ passcodeId: string; } | { error: string }> {
+export async function resend({ id }: { id: string; }): Promise<{ id: string; } | { error: string }> {
   // call resend endpoint
   try {
     const endpoint = `${API_URL}/${API_ENDPOINT_RESEND}/${id}`

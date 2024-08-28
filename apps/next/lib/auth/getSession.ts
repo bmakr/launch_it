@@ -3,9 +3,9 @@
 import { cookies } from 'next/headers'
 import { decrypt } from './encryption'
 import { nowInSeconds } from 'lib'
-import { JWTPayload } from 'types'
+import { KeyValues } from 'types'
 
-export async function getSession(): Promise<JWTPayload | { error: string } | null> {
+export async function getSession(): Promise<KeyValues | { error: string } | null> {
   const sessionCookie = cookies().get('session');
   
   if (!sessionCookie?.value) {
@@ -13,7 +13,7 @@ export async function getSession(): Promise<JWTPayload | { error: string } | nul
   }
 
   try {
-    const decrypted = await decrypt(sessionCookie.value) as JWTPayload;
+    const decrypted = await decrypt(sessionCookie.value) as KeyValues;
     const now = nowInSeconds();
 
     // Check if the jwt has expired

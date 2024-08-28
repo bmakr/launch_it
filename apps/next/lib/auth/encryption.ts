@@ -2,7 +2,7 @@
 
 import { SignJWT, jwtVerify } from 'jose'
 import { createSecretKey } from 'crypto'
-import { JWTPayload } from 'types'
+import { KeyValues } from 'types'
 
 // get the secret key from the environment variables
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string
@@ -12,7 +12,7 @@ if (!JWT_SECRET_KEY) {
 
 const key = createSecretKey(Buffer.from(JWT_SECRET_KEY, 'utf-8'))
 
-export async function encrypt(payload: JWTPayload): Promise<string> {
+export async function encrypt(payload: KeyValues): Promise<string> {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -20,7 +20,7 @@ export async function encrypt(payload: JWTPayload): Promise<string> {
     .sign(key);
 }
 
-export async function decrypt(token: string): Promise<JWTPayload> {
+export async function decrypt(token: string): Promise<KeyValues> {
   try {
     const { payload } = await jwtVerify(token, key, {
       algorithms: ['HS256'],
