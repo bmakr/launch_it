@@ -1,4 +1,5 @@
-# Tamagui + Solito + Next + Expo Monorepo
+# Launch it
+# derived from Tamagui + Solito + Next + Expo Monorepo
 
 ```sh
 npm create tamagui
@@ -102,3 +103,6 @@ You may potentially want to have the native module transpiled for the next app. 
 - Install command to be `yarn set version stable && yarn install`
 - Build command: leave default setting
 - Output dir: leave default setting
+- Add Env Settings for:
+  - ENABLE_EXPERIMENTAL_COREPACK: 1
+  - YARN_ENABLE_IMMUTABLE_INSTALLS: false
