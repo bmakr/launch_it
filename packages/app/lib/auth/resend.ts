@@ -1,11 +1,4 @@
-'use server'
-
-const API_URL = process.env.API_URL
-const API_ENDPOINT_RESEND = process.env.API_ENDPOINT_RESEND
-
-if (!API_URL || !API_ENDPOINT_RESEND ) {
-  throw new Error('Environment variable is not set')
-}
+import { API_URL, API_ENDPOINT_RESEND } from 'app/lib'
 
 export async function resend({ id }: { id: string; }): Promise<{ id: string; } | { error: string }> {
   // call resend endpoint

@@ -33,7 +33,7 @@ export async function sendVerificationEmail({
       addToAudience: true,
       dataVariables: {
         passcode: passcode,
-        url: `${API_URL}/${API_ENDPOINT_VERIFY}/${sessionId}`
+        url: `${API_URL}/verify/${sessionId}`
       }
     });
   } catch (error) {

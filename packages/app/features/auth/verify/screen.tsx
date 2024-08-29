@@ -2,13 +2,10 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useParams } from 'solito/navigation'
 import { Auth, AuthConfig } from '../../../shared/Auth'
+import { verify, resend } from 'app/lib'
+import { Platform } from 'react-native'
 
-interface VerifyScreenProps {
-  verify: (params: { val: string; id: string }) => Promise<{ error?: string }>
-  resend: ({ id }: { id: string; }) => Promise<{ passcodeId: string; } | { error: string }>
-}
-
-export function VerifyScreen({ verify, resend }: VerifyScreenProps) {
+export function VerifyScreen({ setCookie }: { setCookie: any }) {
   const router = useRouter()
   const { id }: { id: string } = useParams()
   const [code, setCode] = useState('')
@@ -43,6 +40,13 @@ export function VerifyScreen({ verify, resend }: VerifyScreenProps) {
       const response = await verify({ val: cleanCode, id: id as string })
       if (response.error) {
         throw new Error(response.error)
+      }
+      // set cookie on web
+      if (Platform.OS === 'web') {
+        setCookie({
+          user: response.user,
+          id: response.id
+        })
       }
       setStatus('success')
     } catch (e) {
