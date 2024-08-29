@@ -1,6 +1,6 @@
 import { createPasscode, nowInSeconds, sendVerificationEmail } from 'lib'
 import { NextRequest, NextResponse } from 'next/server'
-import { Params, Session } from 'types'
+import { Params, Session, User } from 'types'
 import { Redis } from '@upstash/redis'
 
 /*
@@ -38,10 +38,10 @@ export async function POST(_: NextRequest, { params }: Params) {
     pipe.get(`sessions:${existingSessionId}`) // existingSession 0
     pipe.incr('sessions:id:counter') // sessionId 1
     const results = await pipe.exec()
-    const existingSession = results[0]
-    sessionId = results[1]
+    const existingSession = results[0] as Session
+    sessionId = results[1] as number
     userId = existingSession.userId
-    const user = await redis.get(`users:${userId}`)
+    const user = await redis.get(`users:${userId}`) as User
     const { email } = user
     
     await await sendVerificationEmail({

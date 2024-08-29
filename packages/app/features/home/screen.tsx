@@ -16,15 +16,18 @@ import { useEffect } from 'react'
 import { Platform } from 'react-native'
 import { useLink } from 'solito/navigation'
 import { Footer } from 'app/shared'
+import { useSearchParams } from 'solito/navigation'
 
-export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
-  // pages mode is for next routing purposes so we don't need it
-  // const linkTarget = pagesMode ? '/pages-example-user' : '/user' 
+type SearchParams = {
+  toast?: string;
+}
+
+export function HomeScreen() {
   const toast = useToastController()
+  const params = useSearchParams<SearchParams>()
 
   // trigger toast
   useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
     const toastParams = params?.get('toast')
     if (toastParams === 'loggedOut' || toastParams === 'expired' || toastParams === 'login') {
       const toastMessagesKv = {
@@ -80,7 +83,7 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
             Welcome to Actual.
           </H1>
           <Paragraph col="$color10" ta="center">
-            Actionable Knowledge in the Palm of Your Hand
+            Learn Faster from the Palm of Your Hand
           </Paragraph>
           <Separator />
           <Paragraph ta="center">

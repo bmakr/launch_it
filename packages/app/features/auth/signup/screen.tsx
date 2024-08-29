@@ -1,12 +1,13 @@
 import { Auth, AuthConfig } from '../../../shared/Auth'
 import { useRouter } from 'solito/navigation'
 import { useEffect, useState, useCallback } from 'react'
+import { signup } from 'app/lib'
 
 interface SignupProps {
   signup: ({ email }: { email: string; }) => Promise<{ id: string } | { error: string }>
 }
 
-export function SignupScreen({ signup }: SignupProps) {
+export function SignupScreen() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'' | 'sending' | 'error' | 'success'>('')

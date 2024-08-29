@@ -1,0 +1,6 @@
+export const API_URL = 'http://localhost:3000'
+export const API_ENDPOINT_SIGNUP = 'api/auth/signup'
+export const API_ENDPOINT_VERIFY = 'api/auth/verify'
+export const API_ENDPOINT_LOGIN = 'api/auth/login'
+export const API_ENDPOINT_LOGOUT = 'api/auth/logout'
+export const API_ENDPOINT_RESEND = 'api/auth/resend'

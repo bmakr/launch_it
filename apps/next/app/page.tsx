@@ -17,6 +17,7 @@ export default function Home() {
       if (session) {
         router.push('/profile')
       }
+      setStatus('loaded')
     }
 
     checkSession()
@@ -31,7 +32,7 @@ export default function Home() {
           <Spinner mt={100} />
         </View>
       )}
-      {status !== 'loading' && (
+      {status === 'loaded' && (
         <HomeScreen />
       )}
     </>
