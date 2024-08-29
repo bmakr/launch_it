@@ -1,8 +1,8 @@
-'use server'
+import { API_URL, API_ENDPOINT_LOGIN } from 'app/lib'
 
 export async function login({ val }: { val: string }) {
   let response: { error?: string; id?: string; status?: number; }
-  const endpoint = `${process.env.API_URL}/${process.env.API_ENDPOINT_LOGIN}`
+  const endpoint = `${API_URL}/${API_ENDPOINT_LOGIN}`
   console.log({ endpoint})
   try {
     const res = await fetch(endpoint, {
@@ -15,7 +15,7 @@ export async function login({ val }: { val: string }) {
 
   } catch (e) {
     console.log({ error: e })
-    return { error: e }
+    return { error: JSON.stringify(e) }
   }
 
   return response
