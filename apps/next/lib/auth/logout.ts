@@ -2,14 +2,13 @@
 
 import { cookies } from 'next/headers'
 
-export async function logout({ id }: { id: string; }) {
-  let response
+export async function logout() {
   try {
     // delete session coookie
     await cookies().delete('session')
-    return response
+    return
   } catch (e) {
     console.log('logout()', { e })
-    response = { error: e }
+    return { error: e }
   }
 }

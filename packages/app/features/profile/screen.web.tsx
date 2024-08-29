@@ -9,8 +9,8 @@ export function ProfileScreen({
   logout,
   interval = 1000
 }: {
-  getSession: any;
-  logout: any;
+  getSession?: any;
+  logout?: any;
   interval?: number;
 }) {
   const router = useRouter()
@@ -68,7 +68,7 @@ export function ProfileScreen({
   useEffect(() => {
     if (status !== 'logout') return
     async function logoutUser() {
-      await logout({ id: user.id })
+      await logout()
 
       router.push(`/?toast=loggedOut`)
     }

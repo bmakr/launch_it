@@ -1,21 +1,26 @@
-import { Anchor, Image, XStack, View } from '@my/ui'
+import { XStack, View, Image } from '@my/ui'
+import { Link } from 'solito/link'
 
 export function Header() {
   return (
-    <XStack w={400} mx='auto' mt='$6'>
-      <Anchor href='/'>
+    <XStack w={400} mx='auto' px={20} bg='$background'>
+      <Link href='/'>
         <View
-          mt={100}
+          mt={50}
           bg='white'
           bw={.5}
           boc='white'
           ai='center'
           jc='center'
         >
-          <Image src='/logo-blue.png' alt='Actual Logo' w='$7' h='$3' />
+          <Image
+            src="https://imagedelivery.net/6mgEv1oiFiEZf73JB3qb6A/e8435582-1bdb-4733-bf79-4383478c4000/public"
+            alt="Actualed Logo"
+            height='$3'
+            width='$7'
+          />
         </View>
-
-      </Anchor>
+      </Link>
     </XStack>
   )
 }

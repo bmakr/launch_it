@@ -5,7 +5,7 @@ import { Auth, AuthConfig } from '../../../shared/Auth'
 import { verify, resend } from 'app/lib'
 import { Platform } from 'react-native'
 
-export function VerifyScreen({ setCookie }: { setCookie: any }) {
+export function VerifyScreen({ setCookie }: { setCookie?: any }) {
   const router = useRouter()
   const { id }: { id: string } = useParams()
   const [code, setCode] = useState('')
@@ -38,6 +38,7 @@ export function VerifyScreen({ setCookie }: { setCookie: any }) {
 
     try {
       const response = await verify({ val: cleanCode, id: id as string })
+
       if (response.error) {
         throw new Error(response.error)
       }
@@ -71,6 +72,7 @@ export function VerifyScreen({ setCookie }: { setCookie: any }) {
       }
     }
     resendPasscode()
+    router.push(`/auth/verify/${Number(id) + 1}`)
   }, [])
 
   useEffect(() => {

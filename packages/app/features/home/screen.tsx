@@ -17,6 +17,7 @@ import { Platform } from 'react-native'
 import { useLink } from 'solito/navigation'
 import { Footer } from 'app/shared'
 import { useSearchParams } from 'solito/navigation'
+import { Link } from 'solito/link'
 
 type SearchParams = {
   toast?: string;
@@ -42,7 +43,7 @@ export function HomeScreen() {
     }
   }, [])
 
-  const linkProps = useLink({
+  const signupLinkProps = useLink({
     href: `/auth/signup`,
   })
 
@@ -68,14 +69,20 @@ export function HomeScreen() {
         </XStack>
 
         <View
-          mt={20}
+          mt={125}
           bg="white"
           w='$10'
           h='$5'
           ai='center'
           jc='center'
         >
-          <Image ai='center' src="/logo-blue.png" alt="Actual Logo" w="$10" h="$5" />
+          <Image
+            ai='center'
+            src="https://imagedelivery.net/6mgEv1oiFiEZf73JB3qb6A/95f6cd37-954c-43c5-0039-d1be08af7200/public"
+            alt="Actualed Logo"
+            w="$10"
+            h="$5"
+          />
         </View>
 
         <YStack gap="$4">
@@ -92,10 +99,10 @@ export function HomeScreen() {
           <Separator />
         </YStack>
 
-        <Button {...linkProps}>SIGN UP</Button>
-        <Anchor href='/auth/login' textDecorationLine='none'>
+        <Button {...signupLinkProps}>SIGN UP</Button>
+        <Link href='/auth/login' style={{ textDecoration: 'none' }}>
           <Text col='$gray7'>I ALREADY HAVE AN ACCOUNT</Text>
-        </Anchor>
+        </Link>
 
         <Footer />
 

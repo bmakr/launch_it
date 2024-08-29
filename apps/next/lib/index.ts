@@ -2,7 +2,7 @@
 export { getBody } from './next'
 
 // auth
-export { getSession, setCookie } from './auth'
+export { getSession, setCookie, logout } from './auth'
 
 // loops
 export { sendVerificationEmail } from './loops'

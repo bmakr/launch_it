@@ -11,6 +11,7 @@ export async function setCookie({
   user: User; 
   id: string; 
 }) {
+
   const encrypted = await encrypt({ user, id });
 
   // Save the session in a cookie

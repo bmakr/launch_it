@@ -3,7 +3,7 @@
 // export { verify } from './verify'
 export { getSession } from './getSession'
 // export { login } from './login'
-// export { logout } from './logout'
+export { logout } from './logout'
 // export { updateSession } from './updateSession'
 // export { resend } from './resend'
 export { setCookie } from './setCookie'

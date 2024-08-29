@@ -1,5 +1,3 @@
-'use server'
-
 import { Params, Session } from 'types'
 import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
@@ -28,14 +26,27 @@ export async function POST(req: NextRequest, { params }: Params) {
     
     //validate id from params
     sessionId = params.id
-    if (!sessionId) return NextResponse.json({ error: 'Internal error: params' }, { status: 500 })
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: 'Internal error: params' }, { status: 500 }
+      )
+    }
 
     // get input code from body
     const body = await getBody({ req })
     const { val } = body
-    if (!val) return NextResponse.json({ error: 'Internal error: /verify:No val in body', status: 500 })
+    if (!val) {
+      return NextResponse.json(
+        { error: 'Internal error: /verify:No val in body', status: 500 }
+      )
+    }
+
     input = Number(val)
-    if (isNaN(input)) return NextResponse.json({ error: 'Internal error: /verify:Val NaN', status: 500 })
+    if (isNaN(input)) {
+      return NextResponse.json(
+        { error: 'Internal error: /verify:Val NaN', status: 500 }
+      )
+    }
   } catch (error) {
     console.error(error)
     console.error('Error in /verify:validation', error)
@@ -46,44 +57,51 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 
   // get session
-  let user
+  let user, numericalId
   try {
-    const numericalId = Number(sessionId)
+    numericalId = Number(sessionId)
     if (isNaN(numericalId)) {
-      return NextResponse.json({ error: 'Invalid session ID', status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid session ID', status: 400 }
+      )
     }
     
     const session = await redis.get(`sessions:${sessionId}`) as Session
     if (!session) {
-      return NextResponse.json({ error: 'Session not found', status: 404 })
+      return NextResponse.json(
+        { error: 'Session not found', status: 404 }
+      )
     }
-
-    console.log({ session })
-    console.log(typeof session)
 
     const { passcode, userId, createdAt } = session
 
     if (!passcode || ! userId || !createdAt) {
-      return NextResponse.json({ error: 'Internal Error: /verify:deconstructing session', status: 400 })
-    }
-
-    console.log(typeof passcode, typeof input)
+      return NextResponse.json(
+        { error: 'Internal Error: /verify:deconstructing session', status: 400 }
+      )
+    }    
 
     // check input against saved passcode
     if (input !== passcode) {
-      return NextResponse.json({ error: 'Invalid code. Please re-check the code', status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid code. Please re-check the code', status: 400 }
+      )
     }
 
     // check expiration
     const PASSCODE_EXPIRATION_TIME = 300; // 5 minutes in seconds
     if (nowInSeconds() - createdAt > PASSCODE_EXPIRATION_TIME) {
-      return NextResponse.json({ error: 'Passcode has expired', status: 400 })
+      return NextResponse.json(
+        { error: 'Passcode has expired', status: 400 }
+      )
     } 
 
     // get user
     user = await redis.get(`users:${userId}`)
 
-    if (!user) return NextResponse.json({ error: 'Internal error: /verify:get user', status: 500 })
+    if (!user) return NextResponse.json(
+      { error: 'Internal error: /verify:get user', status: 500 }
+    )
 
   } catch(e) {
     console.error('Error in /verify:session', e)
@@ -94,6 +112,6 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 
   // success
-  return NextResponse.json({ user }, { status: 200 })
+  return NextResponse.json({ user, id: numericalId }, { status: 200 })
 }
 

@@ -16,7 +16,7 @@ export async function POST(_: NextRequest, { params }: Params) {
     redis = Redis.fromEnv()
     if (!redis) return NextResponse.json({ error: 'Internal error: redis' }, { status: 500 })
     // Extract session id from params
-    const { id } = params;
+    const { id } = params
     existingSessionId = Number(id)
     if (isNaN(existingSessionId)) return NextResponse.json({ error: 'Internal error. /resend:params.id NaN'})
   } catch (error) {
@@ -35,8 +35,8 @@ export async function POST(_: NextRequest, { params }: Params) {
   try {
     passcode = createPasscode()
     const pipe = redis.pipeline()
-    pipe.get(`sessions:${existingSessionId}`) // existingSession 0
-    pipe.incr('sessions:id:counter') // sessionId 1
+    pipe.get(`sessions:${existingSessionId}`) // existingSession index 0
+    pipe.incr('sessions:id:counter') // sessionId index 1
     const results = await pipe.exec()
     const existingSession = results[0] as Session
     sessionId = results[1] as number
@@ -57,14 +57,13 @@ export async function POST(_: NextRequest, { params }: Params) {
   // create new session
   // delete existing session if present
   try {
-    // get existing session id for user
-    const existingSessionId = redis.get(`sessions:sessionIdByUserId:${userId}`)
     const session: Session = { userId, passcode, createdAt: nowInSeconds() }
 
     // execute pipeline to create new session and delete old
     const pipe = redis.pipeline()
     pipe.del(`sessions:${existingSessionId}`) // delete existing session
-    pipe.set(`sessions:sessionIdbyUserId:${userId}`, sessionId) // userId index
+    pipe.del(`sessions:sessionIdByUserId:${userId}`) // delete existing userID index
+    pipe.set(`sessions:sessionIdbyUserId:${userId}`, sessionId) // set new userId index
     pipe.set(`sessions:${sessionId}`, session) // save session
     await pipe.exec()
   } catch(e) {

@@ -10,26 +10,26 @@ const boolVals = {
 const disableExtraction =
   boolVals[process.env.DISABLE_EXTRACTION] ?? process.env.NODE_ENV === 'development'
 
-console.log(`
+// console.log(`
 
-Welcome to Tamagui!
+// Welcome to Tamagui!
 
-You can update this monorepo to the latest Tamagui release just by running:
+// You can update this monorepo to the latest Tamagui release just by running:
 
-yarn upgrade:tamagui
+// yarn upgrade:tamagui
 
-We've set up a few things for you.
+// We've set up a few things for you.
 
-See the "excludeReactNativeWebExports" setting in next.config.js, which omits these
-from the bundle: Switch, ProgressBar Picker, CheckBox, Touchable. To save more,
-you can add ones you don't need like: AnimatedFlatList, FlatList, SectionList,
-VirtualizedList, VirtualizedSectionList.
+// See the "excludeReactNativeWebExports" setting in next.config.js, which omits these
+// from the bundle: Switch, ProgressBar Picker, CheckBox, Touchable. To save more,
+// you can add ones you don't need like: AnimatedFlatList, FlatList, SectionList,
+// VirtualizedList, VirtualizedSectionList.
 
-🐣
+// 🐣
 
-Remove this log in next.config.js.
+// Remove this log in next.config.js.
 
-`)
+// `)
 
 const plugins = [
   withTamagui({
@@ -60,7 +60,17 @@ module.exports = function () {
            config.resolve.fallback.tls = false
       }
 
+
       return config
+    },
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'imagedelivery.net',
+          port: '',
+        },
+      ],
     },
     typescript: {
       ignoreBuildErrors: true,

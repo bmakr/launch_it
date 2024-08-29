@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Auth, AuthConfig } from '../../../shared/Auth'
 import { useRouter } from 'solito/navigation'
+import { login } from 'app/lib'
 
 interface LoginProps {
   login: (data: { val: string }) => Promise<{ id?: string; error?: string; status: number; }>
 }
 
-export function LoginScreen({ login }: LoginProps) {
+export function LoginScreen() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'' | 'resent' | 'resend' | 'sending' | 'error' | 'success'>('')

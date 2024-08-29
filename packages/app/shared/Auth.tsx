@@ -1,10 +1,11 @@
 import {
-  H1, Text, YStack, Input, Button, XStack, Anchor,
+  H1, Text, YStack, Input, Button, XStack,
   View,
   Paragraph
 } from '@my/ui'
 import { Header } from './Header'
 import { Footer } from './Footer'
+import { Link } from 'solito/link'
 
 type Handler = ({
   val,
@@ -34,16 +35,32 @@ export function Auth({ authConfig }: { authConfig: AuthConfig }) {
   } = authConfig
 
   return (
-    <>
-      <Header />
-      <YStack f={1} jc="center" ai="center" gap="$8" p="$4" bg="$background" w={400} mx='auto'>
+    <View bg='$background' h='100%'>
+      <View height={150}>
+        <Header />
+      </View>
+      <YStack
+        mt={50}
+        f={1}
+        jc="center"
+        ai="center"
+        gap="$8"
+        p="$4"
+        bg="$background"
+        w={400}
+        mx='auto'
+      >
         <YStack gap='$2' ac='flex-start' w='100%'>
           <H1>{title}</H1>
           <Text>{description}</Text>
         </YStack>
         {status === 'error' && <Paragraph style={{ color: 'red' }}>{error}</Paragraph>}
-        <XStack gap="$2" w='100%'>
-          <Input placeholder={placeholder} onChangeText={(text) => setVal(text)} />
+        <XStack gap="$2" w='100%' flexWrap="wrap">
+          <Input
+            minWidth={225}
+            placeholder={placeholder}
+            onChangeText={(text) => setVal(text)}
+          />
           <Button onPress={() => handler({ val })}>{buttonText}</Button>
         </XStack>
         <XStack w='100%'>
@@ -53,9 +70,9 @@ export function Auth({ authConfig }: { authConfig: AuthConfig }) {
         </XStack>
 
         {linkText && href ? (
-          <Anchor href={href} textDecorationLine='none'>
+          <Link href={href} style={{ textDecoration: 'none' }}>
             <Text col='$gray7'>{linkText}</Text>
-          </Anchor>
+          </Link>
         ) : (
           <View onPress={resend} cursor='pointer'>
             <Text col='$gray7'>RESEND SECURITY CODE</Text>
@@ -64,6 +81,6 @@ export function Auth({ authConfig }: { authConfig: AuthConfig }) {
 
         <Footer />
       </YStack>
-    </>
+    </View>
   )
 }
