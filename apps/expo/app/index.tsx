@@ -1,5 +1,6 @@
 import { HomeScreen } from 'app/features/home/screen'
 import { Stack } from 'expo-router'
+import { ScrollView } from 'react-native'
 
 export default function Screen() {
   return (
@@ -9,7 +10,9 @@ export default function Screen() {
           title: 'Home',
         }}
       />
-      <HomeScreen />
+      <ScrollView>
+        <HomeScreen />
+      </ScrollView>
     </>
   )
 }

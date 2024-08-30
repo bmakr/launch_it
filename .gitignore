@@ -48,3 +48,7 @@ thumbs.db
 
 # turbo build log
 **/.turbo/*
+
+# native builds
+apps/expo/ios/
+apps/expo/android/

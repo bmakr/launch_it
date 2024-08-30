@@ -2,17 +2,14 @@
 
 import { cookies } from 'next/headers'
 import { encrypt } from './encryption'
-import { User } from 'types';
 
 export async function setCookie({ 
-  user, 
   id 
 }: { 
-  user: User; 
   id: string; 
 }) {
 
-  const encrypted = await encrypt({ user, id });
+  const encrypted = await encrypt({ id });
 
   // Save the session in a cookie
   cookies().set('session', encrypted, {
@@ -23,5 +20,5 @@ export async function setCookie({
     path: '/',
   });
 
-  return { user, id }
+  return { id }
 }

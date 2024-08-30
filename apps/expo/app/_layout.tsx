@@ -39,8 +39,30 @@ function RootLayoutNav() {
 
   return (
     <Provider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack />
+      <ThemeProvider
+        value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      >
+        <Stack
+          screenOptions={{
+            headerBackButtonMenuEnabled: false,
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen
+            name="auth"
+            options={{
+              title: "Login",
+              presentation: "modal"
+            }} />
+          <Stack.Screen
+            name="[...missing]"
+            options={{
+              title: "404"
+            }} />
+          <Stack.Screen name="(tabs)" options={{
+            headerShown: false
+          }} />
+        </Stack>
         <NativeToast />
       </ThemeProvider>
     </Provider>

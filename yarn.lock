@@ -3034,6 +3034,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-async-storage/async-storage@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@react-native-async-storage/async-storage@npm:2.0.0"
+  dependencies:
+    merge-options: "npm:^3.0.4"
+  peerDependencies:
+    react-native: ^0.0.0-0 || >=0.65 <1.0
+  checksum: 10/cd00a7fac584bfce350c0ad56a542e19c5aa77bec41a211f004c87343e971819d38c5483470fd11116e0271a5e1321ce656cc0bb66d2aa0852f74bc23be61a77
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-clean@npm:13.6.8":
   version: 13.6.8
   resolution: "@react-native-community/cli-clean@npm:13.6.8"
@@ -10596,6 +10607,7 @@ __metadata:
     "@expo/config-plugins": "npm:~8.0.4"
     "@expo/metro-config": "npm:~0.18.4"
     "@my/ui": "npm:0.0.1"
+    "@react-native-async-storage/async-storage": "npm:^2.0.0"
     "@tamagui/babel-plugin": "npm:^1.109.7"
     app: "npm:0.0.0"
     babel-plugin-module-resolver: "npm:^5.0.2"
@@ -10607,6 +10619,7 @@ __metadata:
     expo-linear-gradient: "npm:~13.0.2"
     expo-linking: "npm:~6.3.1"
     expo-router: "npm:3.5.15"
+    expo-secure-store: "npm:^13.0.2"
     expo-splash-screen: "npm:0.27.4"
     expo-status-bar: "npm:~1.12.1"
     expo-updates: "npm:~0.25.15"
@@ -10829,6 +10842,15 @@ __metadata:
     react-native-reanimated:
       optional: true
   checksum: 10/00204946074600a9e5c36ceab85b69bcca4b50b04167438366434ae7ee007c47650c44afb58c0a2a997e79cfb58cbb423b411e9266487be63bcf496922623544
+  languageName: node
+  linkType: hard
+
+"expo-secure-store@npm:^13.0.2":
+  version: 13.0.2
+  resolution: "expo-secure-store@npm:13.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/920a4ff94831bc327b08e0f429f3eecfc0fb896e6e865b8d3277c427ad58cec8506815cc094f6e0e8ceed97b33126e8b9d11c923839fcdac946d6eeb2c39cde1
   languageName: node
   linkType: hard
 
@@ -12789,6 +12811,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-plain-obj@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "is-plain-obj@npm:2.1.0"
+  checksum: 10/cec9100678b0a9fe0248a81743041ed990c2d4c99f893d935545cfbc42876cbe86d207f3b895700c690ad2fa520e568c44afc1605044b535a7820c1d40e38daa
+  languageName: node
+  linkType: hard
+
 "is-plain-obj@npm:^3.0.0":
   version: 3.0.0
   resolution: "is-plain-obj@npm:3.0.0"
@@ -14014,6 +14043,15 @@ __metadata:
   version: 1.0.1
   resolution: "merge-descriptors@npm:1.0.1"
   checksum: 10/5abc259d2ae25bb06d19ce2b94a21632583c74e2a9109ee1ba7fd147aa7362b380d971e0251069f8b3eb7d48c21ac839e21fa177b335e82c76ec172e30c31a26
+  languageName: node
+  linkType: hard
+
+"merge-options@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "merge-options@npm:3.0.4"
+  dependencies:
+    is-plain-obj: "npm:^2.1.0"
+  checksum: 10/d86ddb3dd6e85d558dbf25dc944f3527b6bacb944db3fdda6e84a3f59c4e4b85231095f58b835758b9a57708342dee0f8de0dffa352974a48221487fe9f4584f
   languageName: node
   linkType: hard
 

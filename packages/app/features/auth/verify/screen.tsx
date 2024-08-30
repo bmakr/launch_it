@@ -2,7 +2,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useParams } from 'solito/navigation'
 import { Auth, AuthConfig } from '../../../shared/Auth'
-import { verify, resend } from 'app/lib'
+import { verify } from 'app/lib/auth/verify'
+import { resend } from 'app/lib/auth/resend'
 import { Platform } from 'react-native'
 
 export function VerifyScreen({ setCookie }: { setCookie?: any }) {
@@ -45,7 +46,7 @@ export function VerifyScreen({ setCookie }: { setCookie?: any }) {
       // set cookie on web
       if (Platform.OS === 'web') {
         setCookie({
-          user: response.user,
+          // user: response.user,
           id: response.id
         })
       }

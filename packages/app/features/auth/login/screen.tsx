@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Auth, AuthConfig } from '../../../shared/Auth'
 import { useRouter } from 'solito/navigation'
 import { login } from 'app/lib/auth/login'
+import { Response } from 'packages/app/shared'
 
 interface LoginProps {
   login: (data: { val: string }) => Promise<{ id?: string; error?: string; status: number; }>
@@ -37,16 +38,19 @@ export function LoginScreen() {
     }
 
     try {
-      const response: { error?: string; id?: string; status: number; } = await login({ val: cleanEmail })
+      const response: Response = await login({ val: cleanEmail })
       if (response?.error) {
         setError(response.error)
         setStatus('error')
       } else {
+        console.log({ response })
+        console.log(`Attempting to navigate to: /auth/verify/${response.id}`);
         router.push(`/auth/verify/${response.id}`)
         setStatus('success')
       }
     } catch (e) {
-      setError(`Error: ${e instanceof Error ? e.message : String(e)}`)
+      console.log('error: ', e)
+      setError(String(e.message))
       setStatus('error')
     }
   }, [email, login, router])
