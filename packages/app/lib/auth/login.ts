@@ -1,9 +1,9 @@
 import { API_URL, API_ENDPOINT_LOGIN } from 'app/lib'
+import { Response } from 'packages/app/shared'
 
-export async function login({ val }: { val: string }) {
-  let response: { error?: string; id?: string; status?: number; }
+export async function login({ val }: { val: string }): Promise<Response> {
+  let response: Response
   const endpoint = `${API_URL}/${API_ENDPOINT_LOGIN}`
-  console.log({ endpoint})
   try {
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -11,7 +11,6 @@ export async function login({ val }: { val: string }) {
     })
 
     response = await res.json()
-    console.log({ response })
 
   } catch (e) {
     console.log({ error: e })

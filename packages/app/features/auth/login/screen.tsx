@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Auth, AuthConfig } from '../../../shared/Auth'
 import { useRouter } from 'solito/navigation'
-import { login } from 'app/lib'
+import { login } from 'app/lib/auth/login'
 
 interface LoginProps {
   login: (data: { val: string }) => Promise<{ id?: string; error?: string; status: number; }>
