@@ -1,5 +1,6 @@
 import { XStack, View, Image } from '@my/ui'
 import { Link } from 'solito/link'
+import { HEADER_LOGO } from 'app/lib/data'
 
 export function Header() {
   return (
@@ -14,7 +15,7 @@ export function Header() {
           jc='center'
         >
           <Image
-            src="https://imagedelivery.net/6mgEv1oiFiEZf73JB3qb6A/e8435582-1bdb-4733-bf79-4383478c4000/public"
+            src={HEADER_LOGO}
             alt="Actualed Logo"
             height='$3'
             width='$7'

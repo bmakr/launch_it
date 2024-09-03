@@ -17,6 +17,7 @@ import { useLink } from 'solito/navigation'
 import { Footer } from 'app/shared'
 import { useSearchParams } from 'solito/navigation'
 import { Link } from 'solito/link'
+import { HOME_LOGO } from 'app/lib/data'
 
 type SearchParams = {
   toast?: string;
@@ -25,6 +26,11 @@ type SearchParams = {
 export function HomeScreen() {
   const toast = useToastController()
   const params = useSearchParams<SearchParams>()
+
+  const isExpo = !!process.env.EXPO_ROUTER_APP_ROOT
+  const isProduction = process.env.NODE_ENV === 'production'
+  console.log(`Running in Expo: ${isExpo}`)
+  console.log(`Running production: ${isProduction}`)
 
   // trigger toast
   useEffect(() => {
@@ -77,7 +83,7 @@ export function HomeScreen() {
         >
           <Image
             ai='center'
-            src="https://imagedelivery.net/6mgEv1oiFiEZf73JB3qb6A/95f6cd37-954c-43c5-0039-d1be08af7200/public"
+            src={HOME_LOGO}
             alt="Actualed Logo"
             w="$10"
             h="$5"

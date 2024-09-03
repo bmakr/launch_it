@@ -2,7 +2,7 @@
 
 import { SignJWT, jwtVerify } from 'jose'
 import { createSecretKey } from 'crypto'
-import { KeyValues } from 'types'
+import { KeyValues } from 'app/shared/types'
 
 // get the secret key from the environment variables
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string

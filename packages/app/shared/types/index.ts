@@ -3,3 +3,7 @@ export type Response = {
   id?: string | undefined; 
   status?: number; 
 }
+
+export interface KeyValues {
+  [key: string]: any
+}
