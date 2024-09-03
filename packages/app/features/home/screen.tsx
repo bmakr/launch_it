@@ -1,16 +1,15 @@
 import {
   View,
-  Anchor,
-  Button,
-  H1,
-  Paragraph,
-  Separator,
   useToastController,
   SwitchThemeButton,
+  H1,
+  Text,
   XStack,
   YStack,
-  Text,
   Image,
+  Paragraph,
+  Separator,
+  Button
 } from '@my/ui'
 import { useEffect } from 'react'
 import { Platform } from 'react-native'
@@ -100,8 +99,10 @@ export function HomeScreen() {
         </YStack>
 
         <Button {...signupLinkProps}>SIGN UP</Button>
-        <Link href='/auth/login' style={{ textDecoration: 'none' }}>
-          <Text col='$gray7'>I ALREADY HAVE AN ACCOUNT</Text>
+        <Link href='/auth/login'>
+          <Text style={{ textDecoration: 'none' }} col='$gray7'>
+            I ALREADY HAVE AN ACCOUNT
+          </Text>
         </Link>
 
         <Footer />
