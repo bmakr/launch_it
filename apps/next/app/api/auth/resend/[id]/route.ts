@@ -54,8 +54,8 @@ export async function POST(_: NextRequest, { params }: Params) {
     return NextResponse.json({ error: `Internal error: sending email /login:${e}` }, { status: 500 })
   }
 
-  // create new session
-  // delete existing session if present
+  // create a new session/index
+  // delete existing session/index if present
   try {
     const session: Session = { userId, passcode, createdAt: nowInSeconds() }
 

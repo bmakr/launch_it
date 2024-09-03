@@ -19,6 +19,7 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "1.0.1",
       "supportsTablet": true,
       "bundleIdentifier": "com.actualedtest.app"
     },
@@ -34,7 +35,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
